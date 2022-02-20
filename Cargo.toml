@@ -1,0 +1,31 @@
+[package]
+name = "tinysonic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.16.1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.2"
+bytes = "1.1.0"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.5.8"
+dirs = "4"
+
+# qt 
+qmetaobject = "0.2.5"
+cstr = "0.2"
+
+# audio playback
+symphonia = { version = "0.5", features = ["mp3", "vorbis"] }
+
+# local deps
+subsonic-client = { path = "./subsonic-client" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libpulse-binding = "2.5.0"
+libpulse-simple-binding = "2.5.0"
+
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+cpal = "0.13.3"
+rb = "0.3.2"

@@ -1,0 +1,114 @@
+* Rustasonic
+Rustasonic is minimal subsonic API client for Rust. If it looks
+boring, I will have done my job well.
+
+** Goals
+- Be a subsonic API client
+- Support the parts of the API that Navidrome exposes
+- Look like the API docs
+
+** Future Goals
+- Support the parts of the API that other subsonic servers expose.
+
+** Never-Gonna-Be-Goals
+- Be anything that's not just using the Subsonic API
+** TODO 
+- Don't put auth tokens in the log
+- Make 'stream' actually stream, instead of slurping the bytes into memory
+** API coverage 
+- API
+  - [X] System
+    - [X] ping
+    - [X] getLicense
+  - [-] Browsing
+    - [X] getMusicFolders
+    - [X] getIndexes
+    - [X] getMusicDirectory
+    - [X] getGenres
+    - [X] getArtists
+    - [X] getArtist
+    - [X] getAlbum
+    - [ ] getSong
+    - [ ] getVideos
+    - [ ] getVideoInfo
+    - [X] getArtistInfo
+    - [X] getArtistInfo2
+    - [X] getAlbumInfo
+    - [X] getAlbumInfo2
+    - [ ] getSimilarSongs
+    - [ ] getSimilarSongs2
+    - [ ] getTopSongs
+  - [ ] Album/song lists
+    - [ ] getAlbumList
+    - [ ] getAlbumList2
+    - [ ] getRandomSongs
+    - [ ] getSongsByGenre
+    - [ ] getNowPlaying
+    - [ ] getStarred
+    - [ ] getStarred2
+  - [ ] Searching
+    - [ ] search
+    - [ ] search2
+    - [ ] search3
+  - [ ] Playlists
+    - [ ] getPlaylists
+    - [ ] getPlaylist
+    - [ ] createPlaylist
+    - [ ] updatePlaylist
+    - [ ] deletePlaylist
+  - [-] Media retrieval
+    - [X] stream
+    - [ ] download
+    - [ ] hls
+    - [ ] getCaptions
+    - [ ] getCoverArt
+    - [ ] getLyrics
+    - [ ] getAvatar
+  - [ ] Media annotation
+    - [ ] star
+    - [ ] unstar
+    - [ ] setRating
+    - [ ] scrobble
+  - [ ] Sharing
+    - [ ] getShares
+    - [ ] createShare
+    - [ ] updateShare
+    - [ ] deleteShare
+  - [ ] Podcast
+    - [ ] getPodcasts
+    - [ ] getNewestPodcasts
+    - [ ] refreshPodcasts
+    - [ ] createPodcastChannel
+    - [ ] deletePodcastChannel
+    - [ ] deletePodcastEpisode
+    - [ ] downloadPodcastEpisode
+  - [ ] Jukebox
+    - [ ] jukeboxControl
+  - [ ] Internet
+    - [ ] radio
+    - [ ] getInternetRadioStations
+    - [ ] createInternetRadioStation
+    - [ ] updateInternetRadioStation
+    - [ ] deleteInternetRadioStation
+  - [ ] Chat
+    - [ ] getChatMessages
+    - [ ] addChatMessage
+  - [ ] User management
+    - [ ] getUser
+    - [ ] getUsers
+    - [ ] createUser
+    - [ ] updateUser
+    - [ ] deleteUser
+    - [ ] changePassword
+  - [ ] Bookmarks
+    - [ ] getBookmarks
+    - [ ] createBookmark
+    - [ ] deleteBookmark
+    - [ ] getPlayQueue
+    - [ ] savePlayQueue
+  - [ ] Media library
+    - [ ] scanning
+    - [ ] getScanStatus
+    - [ ] startScan
+
+

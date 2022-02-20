@@ -1,0 +1,622 @@
+{
+  "subsonic-response": {
+    "status": "ok",
+    "version": "1.16.1",
+    "type": "navidrome",
+    "serverVersion": "0.47.5 (86fe1e3b)",
+    "genres": {
+      "genre": [
+        {
+          "value": "Rock",
+          "songCount": 1320,
+          "albumCount": 108
+        },
+        {
+          "value": "Jazz",
+          "songCount": 1277,
+          "albumCount": 98
+        },
+        {
+          "value": "J-Pop",
+          "songCount": 1196,
+          "albumCount": 73
+        },
+        {
+          "value": "Soul",
+          "songCount": 980,
+          "albumCount": 21
+        },
+        {
+          "value": "Classic Rock",
+          "songCount": 683,
+          "albumCount": 49
+        },
+        {
+          "value": "j-rock",
+          "songCount": 613,
+          "albumCount": 47
+        },
+        {
+          "value": "Progressive Rock",
+          "songCount": 497,
+          "albumCount": 55
+        },
+        {
+          "value": "Blues",
+          "songCount": 372,
+          "albumCount": 24
+        },
+        {
+          "value": "Progressive Metal",
+          "songCount": 355,
+          "albumCount": 27
+        },
+        {
+          "value": "Pop",
+          "songCount": 345,
+          "albumCount": 27
+        },
+        {
+          "value": "Enka",
+          "songCount": 327,
+          "albumCount": 20
+        },
+        {
+          "value": "Comedy",
+          "songCount": 255,
+          "albumCount": 15
+        },
+        {
+          "value": "Heavy Metal",
+          "songCount": 215,
+          "albumCount": 16
+        },
+        {
+          "value": "Electronic",
+          "songCount": 213,
+          "albumCount": 17
+        },
+        {
+          "value": "Hard Rock",
+          "songCount": 176,
+          "albumCount": 16
+        },
+        {
+          "value": "Alternative Rock",
+          "songCount": 168,
+          "albumCount": 12
+        },
+        {
+          "value": "Math Rock",
+          "songCount": 152,
+          "albumCount": 18
+        },
+        {
+          "value": "Grunge",
+          "songCount": 151,
+          "albumCount": 14
+        },
+        {
+          "value": "Punk Rock",
+          "songCount": 144,
+          "albumCount": 11
+        },
+        {
+          "value": "Country",
+          "songCount": 140,
+          "albumCount": 8
+        },
+        {
+          "value": "Celtic",
+          "songCount": 130,
+          "albumCount": 9
+        },
+        {
+          "value": "Indie Rock",
+          "songCount": 123,
+          "albumCount": 12
+        },
+        {
+          "value": "Folk Rock",
+          "songCount": 120,
+          "albumCount": 11
+        },
+        {
+          "value": "Reggae",
+          "songCount": 110,
+          "albumCount": 7
+        },
+        {
+          "value": "Hip Hop",
+          "songCount": 100,
+          "albumCount": 7
+        },
+        {
+          "value": "Metal",
+          "songCount": 99,
+          "albumCount": 8
+        },
+        {
+          "value": "Indie Pop",
+          "songCount": 96,
+          "albumCount": 8
+        },
+        {
+          "value": "Instrumental Rock",
+          "songCount": 77,
+          "albumCount": 6
+        },
+        {
+          "value": "Post-Rock",
+          "songCount": 74,
+          "albumCount": 10
+        },
+        {
+          "value": "Soft Rock",
+          "songCount": 73,
+          "albumCount": 6
+        },
+        {
+          "value": "Pop Rock",
+          "songCount": 60,
+          "albumCount": 6
+        },
+        {
+          "value": "Power Metal",
+          "songCount": 60,
+          "albumCount": 4
+        },
+        {
+          "value": "Vocal",
+          "songCount": 55,
+          "albumCount": 5
+        },
+        {
+          "value": "Electro",
+          "songCount": 52,
+          "albumCount": 1
+        },
+        {
+          "value": "Hardcore Punk",
+          "songCount": 50,
+          "albumCount": 3
+        },
+        {
+          "value": "Classic",
+          "songCount": 50,
+          "albumCount": 1
+        },
+        {
+          "value": "8-Bit",
+          "songCount": 49,
+          "albumCount": 6
+        },
+        {
+          "value": "Hip-Hop",
+          "songCount": 49,
+          "albumCount": 2
+        },
+        {
+          "value": "Psychedelic Rock",
+          "songCount": 45,
+          "albumCount": 3
+        },
+        {
+          "value": "Bluegrass",
+          "songCount": 44,
+          "albumCount": 3
+        },
+        {
+          "value": "Chillout",
+          "songCount": 42,
+          "albumCount": 4
+        },
+        {
+          "value": "Funk",
+          "songCount": 41,
+          "albumCount": 4
+        },
+        {
+          "value": "Thrash Metal",
+          "songCount": 41,
+          "albumCount": 4
+        },
+        {
+          "value": "Mainstream Jazz",
+          "songCount": 36,
+          "albumCount": 3
+        },
+        {
+          "value": "Pop Punk",
+          "songCount": 36,
+          "albumCount": 2
+        },
+        {
+          "value": "Black Metal",
+          "songCount": 32,
+          "albumCount": 2
+        },
+        {
+          "value": "Pop Rap",
+          "songCount": 32,
+          "albumCount": 1
+        },
+        {
+          "value": "Southern Rock",
+          "songCount": 31,
+          "albumCount": 2
+        },
+        {
+          "value": "Orchestral",
+          "songCount": 30,
+          "albumCount": 1
+        },
+        {
+          "value": "Bhangra",
+          "songCount": 28,
+          "albumCount": 2
+        },
+        {
+          "value": "Christmas Music",
+          "songCount": 26,
+          "albumCount": 2
+        },
+        {
+          "value": "Electropop",
+          "songCount": 26,
+          "albumCount": 2
+        },
+        {
+          "value": "Swing",
+          "songCount": 24,
+          "albumCount": 2
+        },
+        {
+          "value": "Rock Opera",
+          "songCount": 24,
+          "albumCount": 1
+        },
+        {
+          "value": "Lo-Fi",
+          "songCount": 23,
+          "albumCount": 1
+        },
+        {
+          "value": "Ballad",
+          "songCount": 22,
+          "albumCount": 3
+        },
+        {
+          "value": "Piano Rock",
+          "songCount": 22,
+          "albumCount": 2
+        },
+        {
+          "value": "Jazz Fusion",
+          "songCount": 21,
+          "albumCount": 2
+        },
+        {
+          "value": "Smooth Jazz",
+          "songCount": 20,
+          "albumCount": 3
+        },
+        {
+          "value": "Dance",
+          "songCount": 20,
+          "albumCount": 2
+        },
+        {
+          "value": "Big Band",
+          "songCount": 20,
+          "albumCount": 1
+        },
+        {
+          "value": "Kayōkyoku",
+          "songCount": 20,
+          "albumCount": 1
+        },
+        {
+          "value": "Gregorian Chant",
+          "songCount": 19,
+          "albumCount": 1
+        },
+        {
+          "value": "Acid Jazz",
+          "songCount": 18,
+          "albumCount": 1
+        },
+        {
+          "value": "Disco",
+          "songCount": 18,
+          "albumCount": 1
+        },
+        {
+          "value": "Electronica",
+          "songCount": 17,
+          "albumCount": 2
+        },
+        {
+          "value": "Dancehall",
+          "songCount": 17,
+          "albumCount": 1
+        },
+        {
+          "value": "Melodic Death Metal",
+          "songCount": 17,
+          "albumCount": 1
+        },
+        {
+          "value": "Folk",
+          "songCount": 16,
+          "albumCount": 2
+        },
+        {
+          "value": "JPop",
+          "songCount": 16,
+          "albumCount": 2
+        },
+        {
+          "value": "Punk",
+          "songCount": 16,
+          "albumCount": 2
+        },
+        {
+          "value": "Nerdcore",
+          "songCount": 16,
+          "albumCount": 1
+        },
+        {
+          "value": "Rai",
+          "songCount": 16,
+          "albumCount": 1
+        },
+        {
+          "value": "Ska",
+          "songCount": 16,
+          "albumCount": 1
+        },
+        {
+          "value": "Americana",
+          "songCount": 15,
+          "albumCount": 1
+        },
+        {
+          "value": "Rockabilly",
+          "songCount": 15,
+          "albumCount": 1
+        },
+        {
+          "value": "Shoegaze",
+          "songCount": 14,
+          "albumCount": 3
+        },
+        {
+          "value": "Juju",
+          "songCount": 14,
+          "albumCount": 1
+        },
+        {
+          "value": "Neo-Classical Metal",
+          "songCount": 14,
+          "albumCount": 1
+        },
+        {
+          "value": "Tango",
+          "songCount": 14,
+          "albumCount": 1
+        },
+        {
+          "value": "World",
+          "songCount": 14,
+          "albumCount": 1
+        },
+        {
+          "value": "Ambient",
+          "songCount": 13,
+          "albumCount": 2
+        },
+        {
+          "value": "Doom Metal",
+          "songCount": 13,
+          "albumCount": 1
+        },
+        {
+          "value": "Idm",
+          "songCount": 13,
+          "albumCount": 1
+        },
+        {
+          "value": "Salsa",
+          "songCount": 13,
+          "albumCount": 1
+        },
+        {
+          "value": "Indie Folk",
+          "songCount": 12,
+          "albumCount": 1
+        },
+        {
+          "value": "Technical Death Metal",
+          "songCount": 12,
+          "albumCount": 1
+        },
+        {
+          "value": "Chant",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "Jam Band",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "K-Pop",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "New Wave",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "Trip-Hop",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "rock...",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "Ì",
+          "songCount": 11,
+          "albumCount": 1
+        },
+        {
+          "value": "Techno",
+          "songCount": 10,
+          "albumCount": 3
+        },
+        {
+          "value": "Britpop",
+          "songCount": 10,
+          "albumCount": 1
+        },
+        {
+          "value": "Glitch",
+          "songCount": 10,
+          "albumCount": 1
+        },
+        {
+          "value": "Mango",
+          "songCount": 10,
+          "albumCount": 1
+        },
+        {
+          "value": "Neo Soul",
+          "songCount": 10,
+          "albumCount": 1
+        },
+        {
+          "value": "World Fusion",
+          "songCount": 10,
+          "albumCount": 1
+        },
+        {
+          "value": "World Music",
+          "songCount": 10,
+          "albumCount": 1
+        },
+        {
+          "value": "Classical",
+          "songCount": 9,
+          "albumCount": 1
+        },
+        {
+          "value": "Experimental",
+          "songCount": 9,
+          "albumCount": 1
+        },
+        {
+          "value": "Folk Metal",
+          "songCount": 9,
+          "albumCount": 1
+        },
+        {
+          "value": "Post-Hardcore",
+          "songCount": 9,
+          "albumCount": 1
+        },
+        {
+          "value": "Fusion",
+          "songCount": 8,
+          "albumCount": 1
+        },
+        {
+          "value": "Afrobeat",
+          "songCount": 7,
+          "albumCount": 1
+        },
+        {
+          "value": "Children's Music",
+          "songCount": 7,
+          "albumCount": 1
+        },
+        {
+          "value": "Twee Pop",
+          "songCount": 7,
+          "albumCount": 1
+        },
+        {
+          "value": "Country Rock",
+          "songCount": 6,
+          "albumCount": 1
+        },
+        {
+          "value": "Rave",
+          "songCount": 5,
+          "albumCount": 1
+        },
+        {
+          "value": "Avant-Garde",
+          "songCount": 4,
+          "albumCount": 1
+        },
+        {
+          "value": "Contemporary Classical",
+          "songCount": 4,
+          "albumCount": 1
+        },
+        {
+          "value": "Nu Jazz",
+          "songCount": 4,
+          "albumCount": 1
+        },
+        {
+          "value": "Smooth Soul",
+          "songCount": 3,
+          "albumCount": 1
+        },
+        {
+          "value": "Blues Rock",
+          "songCount": 2,
+          "albumCount": 1
+        },
+        {
+          "value": "Country Blues",
+          "songCount": 2,
+          "albumCount": 1
+        },
+        {
+          "value": "Folk-Rock",
+          "songCount": 2,
+          "albumCount": 1
+        },
+        {
+          "value": "Funk Soul",
+          "songCount": 2,
+          "albumCount": 1
+        },
+        {
+          "value": "Pop Soul",
+          "songCount": 2,
+          "albumCount": 1
+        },
+        {
+          "value": "Contemporary R&B",
+          "songCount": 1,
+          "albumCount": 1
+        },
+        {
+          "value": "Soul Jazz",
+          "songCount": 1,
+          "albumCount": 1
+        }
+      ]
+    }
+  }
+}

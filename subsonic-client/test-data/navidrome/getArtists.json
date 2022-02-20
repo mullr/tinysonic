@@ -1,0 +1,24 @@
+{
+  "subsonic-response": {
+    "status": "ok",
+    "version": "1.16.1",
+    "type": "navidrome",
+    "serverVersion": "0.47.5 (86fe1e3b)",
+    "artists": {
+      "index": [
+          {
+          "name": "X-Z",
+          "artist": [
+            {
+              "id": "c54502a4a05864c567dace22fea245ab",
+              "name": "Zappa / Beefheart / Mothers",
+              "albumCount": 1
+            }
+          ]
+        }
+      ],
+      "lastModified": 1643987328001,
+      "ignoredArticles": "The El La Los Las Le Les Os As O A"
+    }
+  }
+}

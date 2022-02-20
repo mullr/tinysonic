@@ -1,0 +1,32 @@
+{
+  "subsonic-response": {
+    "status": "ok",
+    "version": "1.16.1",
+    "type": "navidrome",
+    "serverVersion": "0.47.5 (86fe1e3b)",
+    "artist": {
+      "id": "c54502a4a05864c567dace22fea245ab",
+      "name": "Zappa / Beefheart / Mothers",
+      "albumCount": 1,
+      "artistImageUrl": "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      "album": [
+        {
+          "id": "58e1bd36a1fe5650b9323fd7a0aacc90",
+          "parent": "c54502a4a05864c567dace22fea245ab",
+          "isDir": true,
+          "title": "Bongo Fury",
+          "name": "Bongo Fury",
+          "album": "Bongo Fury",
+          "artist": "Zappa / Beefheart / Mothers",
+          "year": 2012,
+          "coverArt": "9464129d982a6f3441e17655cd9e96a7",
+          "duration": 2473,
+          "created": "2022-02-02T23:59:19.173535866Z",
+          "artistId": "c54502a4a05864c567dace22fea245ab",
+          "songCount": 9,
+          "isVideo": false
+        }
+      ]
+    }
+  }
+}
