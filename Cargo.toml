@@ -17,7 +17,7 @@ qmetaobject = "0.2.5"
 cstr = "0.2"
 
 # audio playback
-symphonia = { version = "0.5", features = ["mp3", "vorbis"] }
+symphonia = { version = "0.5", features = ["mp3", "vorbis", "aac", "flac", "alac", "isomp4"] }
 
 # local deps
 subsonic-client = { path = "./subsonic-client" }
