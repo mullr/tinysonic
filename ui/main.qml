@@ -52,9 +52,13 @@ Kirigami.ApplicationWindow {
             }
 
             Kirigami.SearchField {
+                id: searchField
                 Layout.bottomMargin: 2
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                autoAccept: false
+                text: Albums.search
+                onAccepted: Albums.search = searchField.text
             }
         }
 
@@ -116,6 +120,7 @@ Kirigami.ApplicationWindow {
                         title: model.name
                         artist: model.artist
                         onCoverDoubleClicked: Player.play_album(model.album_id)
+                        onArtistClicked: Albums.search = model.artist
                     }
                 }
             }

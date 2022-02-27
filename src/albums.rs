@@ -25,8 +25,12 @@ pub struct Albums {
     #[allow(unused)]
     sort_order: qt_property!(QString; READ get_sort_order WRITE set_sort_order),
     sort_order_changed: qt_signal!(),
-
     album_list_type: AlbumListType,
+
+    #[allow(unused)]
+    search: qt_property!(QString; READ get_search WRITE set_search NOTIFY search_changed),
+    search_changed: qt_signal!(),
+    search_string: String,
 }
 
 // Required for qml_register_singleton_instance, but unused
@@ -44,9 +48,14 @@ impl Albums {
             comms_tx,
             // add: Default::default(),
             fetch: Default::default(),
+
             sort_order: Default::default(),
             sort_order_changed: Default::default(),
             album_list_type: AlbumListType::Random,
+
+            search: Default::default(),
+            search_changed: Default::default(),
+            search_string: "".into(),
         }
     }
 
@@ -56,17 +65,32 @@ impl Albums {
         (self as &mut dyn QAbstractListModel).end_reset_model();
 
         let self_ptr = QPointer::from(self as &Self);
-        self.comms_tx
-            .send(comms::Request::Albums(
-                self.album_list_type.clone(),
-                Box::new(queued_callback(move |albums: Vec<Album>| {
-                    self_ptr.as_pinned().borrow_mut().map(|self_| {
-                        let mut self_mut = self_.borrow_mut();
-                        self_mut.add_albums(albums);
-                    });
-                })),
-            ))
-            .unwrap();
+
+        if self.search_string.is_empty() {
+            self.comms_tx
+                .send(comms::Request::Albums(
+                    self.album_list_type.clone(),
+                    Box::new(queued_callback(move |albums: Vec<Album>| {
+                        self_ptr.as_pinned().borrow_mut().map(|self_| {
+                            let mut self_mut = self_.borrow_mut();
+                            self_mut.add_albums(albums);
+                        });
+                    })),
+                ))
+                .unwrap();
+        } else {
+            self.comms_tx
+                .send(comms::Request::Search(
+                    self.search_string.clone(),
+                    Box::new(queued_callback(move |albums: Vec<Album>| {
+                        self_ptr.as_pinned().borrow_mut().map(|self_| {
+                            let mut self_mut = self_.borrow_mut();
+                            self_mut.add_albums(albums);
+                        });
+                    })),
+                ))
+                .unwrap();
+        }
     }
 
     fn add_albums(&mut self, albums: Vec<Album>) {
@@ -74,6 +98,22 @@ impl Albums {
         (self as &mut dyn QAbstractListModel).begin_insert_rows(end as i32, end as i32);
         self.list.extend(albums.into_iter());
         (self as &mut dyn QAbstractListModel).end_reset_model();
+    }
+
+    fn get_sort_order(&self) -> QString {
+        let s = match self.album_list_type {
+            AlbumListType::Random => "random",
+            AlbumListType::Newest => "newest",
+            AlbumListType::Highest => "highest",
+            AlbumListType::Frequent => "frequent",
+            AlbumListType::Recent => "recent",
+            AlbumListType::AlphabeticalByName => "by_name",
+            AlbumListType::AlphabeticalByArtist => "by_artist",
+            AlbumListType::Starred => "starred",
+            AlbumListType::ByYear { .. } => "",
+            AlbumListType::ByGenre { .. } => "",
+        };
+        s.into()
     }
 
     fn set_sort_order(&mut self, order: QString) {
@@ -96,20 +136,18 @@ impl Albums {
         }
     }
 
-    fn get_sort_order(&self) -> QString {
-        let s = match self.album_list_type {
-            AlbumListType::Random => "random",
-            AlbumListType::Newest => "newest",
-            AlbumListType::Highest => "highest",
-            AlbumListType::Frequent => "frequent",
-            AlbumListType::Recent => "recent",
-            AlbumListType::AlphabeticalByName => "by_name",
-            AlbumListType::AlphabeticalByArtist => "by_artist",
-            AlbumListType::Starred => "starred",
-            AlbumListType::ByYear { .. } => "",
-            AlbumListType::ByGenre { .. } => "",
-        };
-        s.into()
+    fn get_search(&self) -> QString {
+        self.search_string.as_str().into()
+    }
+
+    fn set_search(&mut self, search: QString) {
+        let search: String = search.into();
+        if self.search_string != search {
+            self.search_string = search;
+            self.search_changed();
+        }
+
+        self.fetch();
     }
 }
 

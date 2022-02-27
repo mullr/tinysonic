@@ -371,6 +371,52 @@ impl Client {
             .bytes()
             .await?)
     }
+
+    pub async fn search2(
+        &self,
+        query: String,
+        artist_count: impl Into<Option<usize>>,
+        artist_offset: impl Into<Option<usize>>,
+        album_count: impl Into<Option<usize>>,
+        album_offset: impl Into<Option<usize>>,
+        song_count: impl Into<Option<usize>>,
+        song_offset: impl Into<Option<usize>>,
+        music_folder_id: impl Into<Option<&str>>,
+    ) -> ApiResult<SearchResults> {
+        let mut params = vec![];
+        params.push(("query", query.to_owned()));
+        if let Some(artist_count) = artist_count.into() {
+            params.push(("artistCount", artist_count.to_string()));
+        }
+        if let Some(artist_offset) = artist_offset.into() {
+            params.push(("artistOffset", artist_offset.to_string()));
+        }
+        if let Some(album_count) = album_count.into() {
+            params.push(("albumCount", album_count.to_string()));
+        }
+        if let Some(album_offset) = album_offset.into() {
+            params.push(("albumOffset", album_offset.to_string()));
+        }
+        if let Some(song_count) = song_count.into() {
+            params.push(("songCount", song_count.to_string()));
+        }
+        if let Some(song_offset) = song_offset.into() {
+            params.push(("songOffset", song_offset.to_string()));
+        }
+        if let Some(id) = music_folder_id.into() {
+            params.push(("musicFolderId", id.to_owned()));
+        }
+
+        let res = self
+            .request_args::<Search2Body>("search2", &params)
+            .await?;
+
+        Ok(SearchResults {
+            artists: res.inner.artist.unwrap_or_default(),
+            albums: res.inner.album.unwrap_or_default(),
+            song: res.inner.song.unwrap_or_default(),
+        })
+    }
 }
 
 type ApiResult<T> = Result<T, ApiError>;
@@ -882,6 +928,25 @@ struct GetAlbumListBody {
 #[derive(Debug, Deserialize)]
 struct GetAlbumListInner {
     album: Option<Vec<Child>>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Search2Body {
+    #[serde(rename = "searchResult2")]
+    inner: Search2Inner,
+}
+
+#[derive(Debug, Deserialize)]
+struct Search2Inner {
+    artist: Option<Vec<Artist>>,
+    album: Option<Vec<Child>>,
+    song: Option<Vec<Child>>,
+}
+
+pub struct SearchResults {
+    pub artists: Vec<Artist>,
+    pub albums: Vec<Child>,
+    pub song: Vec<Child>,
 }
 
 #[cfg(test)]

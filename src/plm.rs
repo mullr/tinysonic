@@ -22,7 +22,7 @@ use tokio::{
     sync::mpsc::{error::TryRecvError, unbounded_channel, UnboundedReceiver, UnboundedSender},
     task::{spawn_blocking, JoinHandle},
 };
-use tracing::{debug, error, info, trace, warn, instrument};
+use tracing::{debug, error, info, instrument, trace, warn};
 
 use crate::{
     audio::{self, AudioCommand, AudioState, AudioThread},
@@ -81,10 +81,9 @@ impl std::fmt::Debug for PlmCommand {
                 .debug_struct("AudioPlayingTrack")
                 .field("track_id", track_id)
                 .finish(),
-            Self::AudioState { state } => f
-                .debug_struct("AudioState")
-                .field("state", state)
-                .finish(),
+            Self::AudioState { state } => {
+                f.debug_struct("AudioState").field("state", state).finish()
+            }
         }
     }
 }

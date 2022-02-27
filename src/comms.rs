@@ -5,10 +5,12 @@ use tokio::sync::mpsc;
 use crate::Config;
 
 const GET_ALBUMS_WINDOW_SIZE: usize = 100;
+const NUM_SEARCH_RESULTS: usize = 100;
 
 pub enum Request {
     Albums(AlbumListType, Respond<Vec<super::albums::Album>>),
     AlbumTracks(String, Respond<Vec<super::player::TrackMetadata>>),
+    Search(String, Respond<Vec<super::albums::Album>>),
     TrackData(String, Respond<Bytes>),
 }
 
@@ -16,8 +18,9 @@ impl std::fmt::Debug for Request {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Request::Albums(alt, _) => f.debug_tuple("GetAlbums").field(alt).finish(),
-            Request::AlbumTracks(id, _) => f.debug_tuple("GetAlbums").field(id).finish(),
-            Request::TrackData(id, _) => f.debug_tuple("GetTrackData").field(id).finish(),
+            Request::AlbumTracks(id, _) => f.debug_tuple("AlbumTracks").field(id).finish(),
+            Request::Search(term, _) => f.debug_tuple("Search").field(term).finish(),
+            Request::TrackData(id, _) => f.debug_tuple("TrackData").field(id).finish(),
         }
     }
 }
@@ -103,6 +106,41 @@ pub async fn run(config: Config, mut rx: mpsc::UnboundedReceiver<Request>) {
                 }
 
                 respond(tracks);
+            }
+            Request::Search(query, respond) => {
+                let res = client
+                    .search2(
+                        query,
+                        NUM_SEARCH_RESULTS, // artist count
+                        0,                  // artist offset
+                        NUM_SEARCH_RESULTS, // album count
+                        0,                  // album offset
+                        0,                  // song count
+                        0,                  // song offset
+                        None,               // folder id
+                    )
+                    .await
+                    .unwrap();
+
+                // TODO handle artists
+
+                let albums = res
+                    .albums
+                    .into_iter()
+                    .map(|child| super::albums::Album {
+                        album_id: child.id,
+                        name: child.title,
+                        artist: child.artist.unwrap_or_else(|| "".to_string()),
+                        cover_url: match child.cover_art {
+                            Some(art_id) => client
+                                .cover_art_url(&art_id, Some(200))
+                                .unwrap()
+                                .to_string(),
+                            None => "".to_string(),
+                        },
+                    })
+                    .collect::<Vec<_>>();
+                respond(albums);
             }
             Request::TrackData(id, respond) => {
                 let bytes = client
