@@ -1,0 +1,27 @@
+* Goals
+- Be a Navidrome (https://www.navidrome.org/) client
+- Be mostly album-centric
+- While playing, use as little CPU as possible. 
+- Have a very responsive UI
+- Correctly render non-English text in the UI
+* Non-Goals
+- Any kind of music library management
+- Extensive integration with external metadata services. Link to something on the web for that. 
+- Any kind of UI which requires a redraw while a song is playing
+- Support for non-music media
+- Support for "internet radio"
+* Maybe goals
+- Support for other backends. I'm not against this, but I'm not sure I care right now.
+- Do the UI in something else. Qt is fine, but it's kind of a lot. I
+  dislike gtk. Druid could be nice, but it doesn't currently have font
+  character fallback, and can't do virtualized scrolling.
+* TODO
+- [ ] A UI for choosing your server + authn
+- [ ] Put the server password in the system keyring
+- [ ] Censor auth tokens from the log output
+- [ ] Simple Fade in / Fade out
+- [ ] Next button doesn't work (iirc)
+- [ ] Desktop integration stuff - notifications, media buttons
+
+* Dev tools
+https://github.com/patrickelectric/qhot is the bee's knees. Use it on ui/component_test.qml
