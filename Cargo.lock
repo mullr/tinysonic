@@ -1423,6 +1423,7 @@ dependencies = [
 [[package]]
 name = "rust_qt_binding_generator"
 version = "0.3.6"
+source = "git+https://invent.kde.org/mullr/rust-qt-binding-generator#9a060d44f902dbc3aafdd677f74204989cd0e3fa"
 dependencies = [
  "cc",
  "clap",

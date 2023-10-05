@@ -11,9 +11,4 @@ fn main() {
         .module(QtModule::Qml)
         .module(QtModule::QuickControls2)
         .compile("tinysonic");
-
-    // TODO rust_qt_binding_generator::build should do this automatically
-    println!("cargo:rerun-if-changed=bindings.json");
-    println!("cargo:rerun-if-changed=qml.qrc");
-    println!("cargo:rerun-if-changed=src/main.cpp");
 }

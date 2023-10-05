@@ -29,4 +29,4 @@ cpal = "0.13.3"
 rb = "0.3.2"
 
 [build-dependencies]
-rust_qt_binding_generator = { path = "../rust-qt-binding-generator" }
+rust_qt_binding_generator = { package = "rust_qt_binding_generator", git = "https://invent.kde.org/mullr/rust-qt-binding-generator" }
