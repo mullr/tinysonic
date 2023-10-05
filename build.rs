@@ -9,6 +9,7 @@ fn main() {
         .cpp("src/main.cpp")
         .module(QtModule::Gui)
         .module(QtModule::Qml)
+        .module(QtModule::QuickControls2)
         .compile("tinysonic");
 
     // TODO rust_qt_binding_generator::build should do this automatically

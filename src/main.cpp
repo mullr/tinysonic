@@ -4,6 +4,7 @@
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlApplicationEngine>
 #include <QtQml/qqml.h>
+#include <QQuickStyle>
 
 
 extern "C" {
@@ -11,6 +12,8 @@ extern "C" {
         int argc = 1;
         char* argv[1] = { (char*)appPath };
         QGuiApplication app(argc, argv);
+
+        QQuickStyle::setStyle("org.kde.desktop");
 
         Albums* albums = new Albums(NULL);
         albums->set_library(library);
@@ -24,8 +27,9 @@ extern "C" {
         QQmlApplicationEngine engine;
         engine.load(QUrl(QStringLiteral("ui/main.qml")));
 
-        if (engine.rootObjects().isEmpty())
+        if (engine.rootObjects().isEmpty()) {
             return -1;
+        }
 
         return app.exec();
     }
