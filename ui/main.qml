@@ -13,7 +13,6 @@ Kirigami.ApplicationWindow {
 
     Component.onCompleted: {
         Albums.fetch()
-        Player.setup()
     }
 
     Kirigami.ScrollablePage {

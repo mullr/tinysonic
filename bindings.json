@@ -1,0 +1,58 @@
+{
+    "cppFile": "Bindings.cpp",
+    "rust": {
+        "dir": "",
+        "interfaceModule": "ui_interface",
+        "implementationModule": "ui_impl"
+    },
+    "objects": {
+        "Albums": {
+            "type": "List",
+            "properties": {
+                "sort_order": {
+                    "type": "QString",
+                    "write": true
+                },
+                "search": {
+                    "type": "QString",
+                    "write": true
+                }
+            },
+            "functions": {
+                "set_library": { "return": "void", "mut": true, "arguments": [{"name": "arc_ptr", "type": "quint64"}]},
+                "fetch": { "return": "void", "mut": true },
+                "handle_incoming_list": { "return": "void", "mut": true }
+            },
+            "itemProperties": {
+                "album_id": { "type": "QString" },
+                "name": { "type": "QString" },
+                "artist": { "type": "QString" },
+                "cover_url": { "type": "QString" }
+            }
+        },
+        "Player": {
+            "type": "Object",
+            "properties": {
+                "play_state": { "type": "QString"},
+                "current_artist": { "type": "QString"},
+                "current_image_url": { "type": "QString"},
+                "current_album": { "type": "QString"},
+                "current_track_name": { "type": "QString"}
+            },
+            "functions": {
+                "set_library": { "return": "void", "mut": true, "arguments": [{"name": "arc_ptr", "type": "quint64"}]},
+                "set_plm_tx": { "return": "void", "mut": true, "arguments": [{"name": "tx_ptr", "type": "quint64"}]},
+                "handle_incoming_plm_status": { "return": "void", "mut": true },
+                "play_album": {
+                    "return": "void",
+                    "mut": true,
+                    "arguments": [{"name": "id", "type": "QString"}]
+                },
+                "play": { "return": "void", "mut": true },
+                "pause": { "return": "void", "mut": true },
+                "next": { "return": "void", "mut": true },
+                "stop": { "return": "void", "mut": true }
+            }
+        }
+    }
+}

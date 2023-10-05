@@ -1,14 +1,18 @@
-use cstr::cstr;
-use qmetaobject::{prelude::*, qml_register_singleton_instance};
+use std::sync::Arc;
+
+use library::Library;
 use serde::Deserialize;
 use tokio::sync::mpsc::unbounded_channel;
 
-mod albums;
 mod audio;
-mod comms;
+mod library;
 mod output;
-mod player;
 mod plm;
+
+pub mod ui_interface {
+    include!(concat!(env!("OUT_DIR"), "/src/ui_interface.rs"));
+}
+mod ui_impl;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
@@ -17,15 +21,9 @@ pub struct Config {
     pub password: String,
 }
 
-qrc!(my_resource,
-    "tinysonic/qml" {
-        "ui/main.qml",
-        "ui/shadow.png",
-        "ui/AlbumCover.qml",
-        "ui/AlbumCoverGridItem.qml",
-        "ui/PlayingBar.qml",
-    },
-);
+extern "C" {
+    fn main_cpp(app: *const ::std::os::raw::c_char, library: u64, plm_tx: u64);
+}
 
 #[tokio::main]
 async fn main() {
@@ -40,43 +38,25 @@ async fn main() {
     )
     .expect("Bad config file format");
 
-    let (comms_tx, comms_rx) = unbounded_channel::<comms::Request>();
+    let library = Arc::new(Library::new(config));
+
     let (plm_tx, plm_rx) = unbounded_channel::<plm::PlmCommand>();
-
-    tokio::spawn(async move { comms::run(config, comms_rx).await });
-
-    let comms_tx2 = comms_tx.clone();
     let plm_tx2 = plm_tx.clone();
-    tokio::spawn(async move { plm::PlmTask::new(plm_tx2, plm_rx, comms_tx2).run().await });
+    let lib = library.clone();
+    tokio::spawn(async move { plm::PlmTask::new(plm_tx2, plm_rx, lib).run().await });
 
-    let _ = tokio::task::spawn_blocking(move || {
-        qmetaobject::log::init_qt_to_rust();
-
-        let albums = albums::Albums::new(comms_tx.clone());
-        let player = player::Player::new(comms_tx, plm_tx);
-
-        my_resource();
-        qml_register_singleton_instance(
-            cstr!("io.github.mullr.tinysonic"),
-            1,
-            0,
-            cstr!("Albums"),
-            albums,
-        );
-
-        qml_register_singleton_instance(
-            cstr!("io.github.mullr.tinysonic"),
-            1,
-            0,
-            cstr!("Player"),
-            player,
-        );
-
-        let mut engine = QmlEngine::new();
-
-        engine.load_file("qrc:/tinysonic/qml/ui/main.qml".into());
-
-        engine.exec();
+    tokio::task::spawn_blocking(move || {
+        use std::ffi::CString;
+        let app_name = ::std::env::args().next().unwrap();
+        let app_name = CString::new(app_name).unwrap();
+        unsafe {
+            main_cpp(
+                app_name.as_ptr(),
+                &library as *const _ as u64,
+                &plm_tx as *const _ as u64,
+            );
+        }
     })
-    .await;
+    .await
+    .unwrap();
 }

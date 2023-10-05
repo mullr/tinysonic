@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="">
+        <file>ui/main.qml</file>
+        <file>ui/shadow.png</file>
+        <file>ui/AlbumCover.qml</file>
+        <file>ui/AlbumCoverGridItem.qml</file>
+        <file>ui/PlayingBar.qml</file>
+    </qresource>
+</RCC>

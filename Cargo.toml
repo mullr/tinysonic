@@ -11,9 +11,6 @@ bytes = "1.1.0"
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.5.8"
 dirs = "4"
-
-# qt 
-qmetaobject = "0.2.9"
 cstr = "0.2"
 
 # audio playback
@@ -21,6 +18,7 @@ symphonia = { version = "0.5", features = ["mp3", "vorbis", "aac", "flac", "alac
 
 # local deps
 subsonic-client = { path = "./subsonic-client" }
+libc = "0.2.148"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 libpulse-binding = "2.5.0"
@@ -29,3 +27,6 @@ libpulse-simple-binding = "2.5.0"
 [target.'cfg(not(target_os = "linux"))'.dependencies]
 cpal = "0.13.3"
 rb = "0.3.2"
+
+[build-dependencies]
+rust_qt_binding_generator = { path = "../rust-qt-binding-generator" }

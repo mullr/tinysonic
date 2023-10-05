@@ -1,13 +1,5 @@
-#![allow(unused)]
-
 use bytes::Bytes;
-use qmetaobject::{prelude::*, queued_callback};
-use std::{
-    borrow::BorrowMut,
-    collections::VecDeque,
-    io::Cursor,
-    sync::{Arc, Mutex},
-};
+use std::{collections::VecDeque, io::Cursor};
 use symphonia::{
     core::{
         codecs::{Decoder, DecoderOptions, CODEC_TYPE_NULL},
@@ -18,13 +10,10 @@ use symphonia::{
     },
     default::{get_codecs, get_probe},
 };
-use tokio::{
-    sync::mpsc::{error::TryRecvError, unbounded_channel, UnboundedReceiver, UnboundedSender},
-    task::{spawn_blocking, JoinHandle},
-};
-use tracing::{debug, error, info, trace, warn};
+use tokio::sync::mpsc::{error::TryRecvError, UnboundedReceiver, UnboundedSender};
+use tracing::{debug, error, info, warn};
 
-use crate::{comms, plm::PlmCommand};
+use crate::plm::PlmCommand;
 
 pub enum AudioCommand {
     EnqueueTrackData { track_id: String, data: Bytes },
@@ -34,8 +23,9 @@ pub enum AudioCommand {
     Next,
 }
 
-#[derive(Eq, PartialEq, Debug, Copy, Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone, Default)]
 pub enum AudioState {
+    #[default]
     Stopped,
     Playing,
     WillPlayWhenDataArrives,
@@ -79,13 +69,16 @@ impl AudioThread {
 
                 if self.state == AudioState::Playing {
                     if let Some(psd) = &self.playing_state_data {
-                        self.plm_tx.send(PlmCommand::AudioPlayingTrack {
-                            track_id: psd.track_id.clone(),
-                        });
+                        self.plm_tx
+                            .send(PlmCommand::AudioPlayingTrack {
+                                track_id: psd.track_id.clone(),
+                            })
+                            .unwrap();
                     }
                 }
                 self.plm_tx
-                    .send(PlmCommand::AudioState { state: self.state });
+                    .send(PlmCommand::AudioState { state: self.state })
+                    .unwrap();
             }
 
             // do a non-blocking recieve when we're in a playing state
@@ -147,12 +140,14 @@ impl AudioThread {
 
                 // No commands? play some audio.
                 Err(TryRecvError::Empty) => {
-                    let psd = match self.playing_state_data {
+                    let _psd = match self.playing_state_data {
                         Some(ref mut psd) => {
                             if !psd.process() {
-                                self.plm_tx.send(PlmCommand::AudioFinishedTrack {
-                                    track_id: psd.track_id.clone(),
-                                });
+                                self.plm_tx
+                                    .send(PlmCommand::AudioFinishedTrack {
+                                        track_id: psd.track_id.clone(),
+                                    })
+                                    .unwrap();
                                 // TODO preserve the audio output from psd
                                 self.state = self.play_next_track();
                             }
@@ -185,7 +180,7 @@ impl AudioThread {
                 }
                 None => {
                     warn!("Skipped unplayable track");
-                    self.plm_tx.send(PlmCommand::AudioSkippedTrack { track_id });
+                    self.plm_tx.send(PlmCommand::AudioSkippedTrack { track_id }).unwrap();
                 }
             }
         }

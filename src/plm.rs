@@ -1,36 +1,17 @@
-#![allow(unused)]
-
 use bytes::Bytes;
-use qmetaobject::{prelude::*, queued_callback};
-use std::{
-    borrow::BorrowMut,
-    collections::VecDeque,
-    io::Cursor,
-    sync::{Arc, Mutex},
-};
-use symphonia::{
-    core::{
-        codecs::{Decoder, DecoderOptions, CODEC_TYPE_NULL},
-        formats::{FormatOptions, FormatReader},
-        io::MediaSourceStream,
-        meta::MetadataOptions,
-        probe::Hint,
-    },
-    default::{get_codecs, get_probe},
-};
+use std::{collections::VecDeque, sync::Arc};
 use tokio::{
-    sync::mpsc::{error::TryRecvError, unbounded_channel, UnboundedReceiver, UnboundedSender},
+    sync::mpsc::{UnboundedReceiver, UnboundedSender},
     task::{spawn_blocking, JoinHandle},
 };
-use tracing::{debug, error, info, instrument, trace, warn};
+use tracing::{debug, error, info};
 
 use crate::{
     audio::{self, AudioCommand, AudioState, AudioThread},
-    comms,
-    player::TrackMetadata,
+    library::{Library, TrackMetadata},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct PlmStatus {
     pub playing_track: Option<TrackMetadata>,
     pub audio_state: crate::audio::AudioState,
@@ -38,14 +19,14 @@ pub struct PlmStatus {
 
 pub enum PlmCommand {
     // for ui -> plm
-    SetStatusCallback(Box<dyn Fn(PlmStatus) + Send>),
+    SetStatusCallback(Box<dyn FnMut(PlmStatus) + Send>),
     SetPlaylist(Vec<TrackMetadata>),
     Stop,
     Pause,
     Play,
     Next,
 
-    // for comms -> plm
+    // for library -> plm
     LoadTrackData { track_id: String, data: Bytes },
 
     // for audio -> plm
@@ -92,11 +73,11 @@ impl std::fmt::Debug for PlmCommand {
 pub struct PlmTask {
     tx: UnboundedSender<PlmCommand>,
     rx: UnboundedReceiver<PlmCommand>,
-    comms_tx: UnboundedSender<comms::Request>,
+    library: Arc<Library>,
     audio_tx: UnboundedSender<AudioCommand>,
-    audio_join_handle: JoinHandle<()>,
+    _audio_join_handle: JoinHandle<()>,
     playlist: VecDeque<(TrackMetadata, LoadStatus)>,
-    status_callback: Option<Box<dyn Fn(PlmStatus) + Send>>,
+    status_callback: Option<Box<dyn FnMut(PlmStatus) + Send>>,
     audio_state: AudioState,
     audio_playing_track_id: Option<String>,
 }
@@ -112,7 +93,7 @@ impl PlmTask {
     pub fn new(
         tx: UnboundedSender<PlmCommand>,
         rx: UnboundedReceiver<PlmCommand>,
-        comms_tx: UnboundedSender<comms::Request>,
+        library: Arc<Library>,
     ) -> Self {
         let (audio_tx, audio_rx) = tokio::sync::mpsc::unbounded_channel();
         let plm_tx_for_audio = tx.clone();
@@ -122,9 +103,9 @@ impl PlmTask {
         Self {
             tx,
             rx,
-            comms_tx,
+            library,
             audio_tx,
-            audio_join_handle,
+            _audio_join_handle: audio_join_handle,
             playlist: Default::default(),
             status_callback: None,
             audio_state: AudioState::Stopped,
@@ -144,7 +125,7 @@ impl PlmTask {
                     self.status_callback = Some(cb);
                 }
                 PlmCommand::SetPlaylist(tracks) => {
-                    self.audio_tx.send(AudioCommand::Stop);
+                    self.audio_tx.send(AudioCommand::Stop).unwrap();
                     self.playlist = tracks
                         .into_iter()
                         .map(|t| (t, LoadStatus::NotLoaded))
@@ -155,20 +136,20 @@ impl PlmTask {
 
                 PlmCommand::Stop => {
                     self.playlist.clear();
-                    self.audio_tx.send(AudioCommand::Stop);
+                    self.audio_tx.send(AudioCommand::Stop).unwrap();
                 }
 
                 PlmCommand::Pause => {
-                    self.audio_tx.send(AudioCommand::Pause);
+                    self.audio_tx.send(AudioCommand::Pause).unwrap();
                 }
 
                 PlmCommand::Play => {
-                    self.audio_tx.send(AudioCommand::Play);
+                    self.audio_tx.send(AudioCommand::Play).unwrap();
                 }
 
                 PlmCommand::Next => {
                     self.playlist.pop_front();
-                    self.audio_tx.send(AudioCommand::Next);
+                    self.audio_tx.send(AudioCommand::Next).unwrap();
                     self.load_as_needed();
                 }
 
@@ -213,7 +194,7 @@ impl PlmTask {
     }
 
     fn publish_status(&mut self) {
-        if let Some(f) = &self.status_callback {
+        if let Some(f) = &mut self.status_callback {
             debug!("Publishing plm status");
             let playing_track = self
                 .audio_playing_track_id
@@ -245,16 +226,16 @@ impl PlmTask {
             LoadStatus::NotLoaded => {
                 let tx = self.tx.clone();
                 let track_id = track.id.clone();
-                self.comms_tx.send(comms::Request::TrackData(
-                    track.id.clone(),
-                    // TODO can I change this to FnOnce?
-                    Box::new(move |bytes| {
-                        tx.send(PlmCommand::LoadTrackData {
-                            track_id: track_id.clone(),
-                            data: bytes,
-                        });
-                    }),
-                ));
+                let library = self.library.clone();
+                tokio::spawn(async move {
+                    let data = library.track_data(&track_id).await;
+                    tx.send(PlmCommand::LoadTrackData {
+                        track_id: track_id.clone(),
+                        data,
+                    })
+                    .unwrap();
+                });
+
                 *load_status = LoadStatus::Loading;
             }
 
@@ -270,7 +251,7 @@ impl PlmTask {
         let entry = self
             .playlist
             .iter_mut()
-            .find(|(t, status)| t.id == track_id);
+            .find(|(t, _status)| t.id == track_id);
         if let Some((t, status)) = entry {
             match status {
                 LoadStatus::NotLoaded | LoadStatus::SentToAudioThread => {
@@ -281,10 +262,12 @@ impl PlmTask {
                     );
                 }
                 LoadStatus::Loading => {
-                    self.audio_tx.send(AudioCommand::EnqueueTrackData {
-                        track_id: t.id.clone(),
-                        data,
-                    });
+                    self.audio_tx
+                        .send(AudioCommand::EnqueueTrackData {
+                            track_id: t.id.clone(),
+                            data,
+                        })
+                        .unwrap();
                     *status = LoadStatus::SentToAudioThread;
                 }
             }
