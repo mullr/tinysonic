@@ -8,7 +8,7 @@
 
 
 extern "C" {
-    int main_cpp(const char* appPath, quint64 library, quint64 plm_tx) {
+    int main_cpp(const char* appPath, quint64 library, quint64 plm) {
         int argc = 1;
         char* argv[1] = { (char*)appPath };
         QGuiApplication app(argc, argv);
@@ -21,7 +21,7 @@ extern "C" {
 
         Player* player = new Player(NULL);
         player->set_library(library);
-        player->set_plm_tx(plm_tx);
+        player->set_plm(plm);
         qmlRegisterSingletonInstance<Player>("io.github.mullr.tinysonic", 1, 0, "Player", player);
 
         QQmlApplicationEngine engine;

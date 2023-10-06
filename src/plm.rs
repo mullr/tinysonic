@@ -1,7 +1,7 @@
 use bytes::Bytes;
 use std::{collections::VecDeque, sync::Arc};
 use tokio::{
-    sync::mpsc::{UnboundedReceiver, UnboundedSender},
+    sync::{mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender}, watch},
     task::{spawn_blocking, JoinHandle},
 };
 use tracing::{debug, error, info};
@@ -11,15 +11,54 @@ use crate::{
     library::{Library, TrackMetadata},
 };
 
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct PlmStatus {
     pub playing_track: Option<TrackMetadata>,
     pub audio_state: crate::audio::AudioState,
 }
 
+pub struct PlaylistManager {
+    tx: UnboundedSender<PlmCommand>,
+    status_rx: watch::Receiver<PlmStatus>
+}
+
+impl PlaylistManager {
+    pub fn new(library: Arc<Library>) -> PlaylistManager {
+        let (tx, rx) = unbounded_channel::<PlmCommand>();
+        let (status_tx, status_rx) = watch::channel(PlmStatus::default());
+
+        let tx2 = tx.clone();
+        tokio::spawn(async move { PlmTask::new(tx2, rx, status_tx, library).run().await });
+        PlaylistManager { tx, status_rx }
+    }
+
+    pub fn status_rx(&self) -> watch::Receiver<PlmStatus> {
+        self.status_rx.clone()
+    }
+
+    pub fn set_playlist(&self, tracks: Vec<TrackMetadata>) {
+        self.tx.send(PlmCommand::SetPlaylist(tracks)).unwrap();
+    }
+
+    pub fn stop(&self) {
+        self.tx.send(PlmCommand::Stop).unwrap();
+    }
+
+    pub fn pause(&self) {
+        self.tx.send(PlmCommand::Pause).unwrap();
+    }
+
+    pub fn play(&self) {
+        self.tx.send(PlmCommand::Play).unwrap();
+    }
+
+    pub fn next(&self) {
+        self.tx.send(PlmCommand::Next).unwrap();
+    }
+}
+
 pub enum PlmCommand {
     // for ui -> plm
-    SetStatusCallback(Box<dyn FnMut(PlmStatus) + Send>),
     SetPlaylist(Vec<TrackMetadata>),
     Stop,
     Pause,
@@ -39,7 +78,6 @@ pub enum PlmCommand {
 impl std::fmt::Debug for PlmCommand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::SetStatusCallback(_) => write!(f, "SetStatusCallback"),
             Self::SetPlaylist(_) => write!(f, "SetPlaylist"),
             Self::Stop => write!(f, "Stop"),
             Self::Pause => write!(f, "Pause"),
@@ -70,14 +108,14 @@ impl std::fmt::Debug for PlmCommand {
 }
 
 /// It's the Playlist Manager
-pub struct PlmTask {
+struct PlmTask {
     tx: UnboundedSender<PlmCommand>,
     rx: UnboundedReceiver<PlmCommand>,
     library: Arc<Library>,
     audio_tx: UnboundedSender<AudioCommand>,
     _audio_join_handle: JoinHandle<()>,
     playlist: VecDeque<(TrackMetadata, LoadStatus)>,
-    status_callback: Option<Box<dyn FnMut(PlmStatus) + Send>>,
+    status_tx: watch::Sender<PlmStatus>,
     audio_state: AudioState,
     audio_playing_track_id: Option<String>,
 }
@@ -90,9 +128,10 @@ enum LoadStatus {
 }
 
 impl PlmTask {
-    pub fn new(
+    fn new(
         tx: UnboundedSender<PlmCommand>,
         rx: UnboundedReceiver<PlmCommand>,
+        status_tx: watch::Sender<PlmStatus>,
         library: Arc<Library>,
     ) -> Self {
         let (audio_tx, audio_rx) = tokio::sync::mpsc::unbounded_channel();
@@ -107,13 +146,13 @@ impl PlmTask {
             audio_tx,
             _audio_join_handle: audio_join_handle,
             playlist: Default::default(),
-            status_callback: None,
+            status_tx,
             audio_state: AudioState::Stopped,
             audio_playing_track_id: None,
         }
     }
 
-    pub async fn run(mut self) {
+    async fn run(mut self) {
         info!("Starting Playlist Manager task");
         while let Some(cmd) = self.rx.recv().await {
             debug!(
@@ -121,9 +160,6 @@ impl PlmTask {
                 "Playlist Manager command"
             );
             match cmd {
-                PlmCommand::SetStatusCallback(cb) => {
-                    self.status_callback = Some(cb);
-                }
                 PlmCommand::SetPlaylist(tracks) => {
                     self.audio_tx.send(AudioCommand::Stop).unwrap();
                     self.playlist = tracks
@@ -194,26 +230,26 @@ impl PlmTask {
     }
 
     fn publish_status(&mut self) {
-        if let Some(f) = &mut self.status_callback {
-            debug!("Publishing plm status");
-            let playing_track = self
-                .audio_playing_track_id
-                .as_ref()
-                .and_then(|playing_track_id| {
-                    self.playlist.iter().find_map(|(t, _)| {
-                        if &t.id == playing_track_id {
-                            Some(t.clone())
-                        } else {
-                            None
-                        }
-                    })
-                });
+        debug!("Publishing plm status");
+        let playing_track = self
+            .audio_playing_track_id
+            .as_ref()
+            .and_then(|playing_track_id| {
+                self.playlist.iter().find_map(|(t, _)| {
+                    if &t.id == playing_track_id {
+                        Some(t.clone())
+                    } else {
+                        None
+                    }
+                })
+            });
 
-            (f)(PlmStatus {
-                playing_track,
-                audio_state: self.audio_state,
-            })
-        }
+        let status = PlmStatus {
+            playing_track,
+            audio_state: self.audio_state,
+        };
+
+        self.status_tx.send(status).unwrap();
     }
 
     fn load_pl_index(&mut self, index: usize) {

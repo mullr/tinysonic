@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
 use library::Library;
+use plm::PlaylistManager;
 use serde::Deserialize;
-use tokio::sync::mpsc::unbounded_channel;
-
 mod audio;
 mod library;
 mod output;
@@ -22,7 +21,7 @@ pub struct Config {
 }
 
 extern "C" {
-    fn main_cpp(app: *const ::std::os::raw::c_char, library: u64, plm_tx: u64);
+    fn main_cpp(app: *const ::std::os::raw::c_char, library: u64, plm: u64);
 }
 
 #[tokio::main]
@@ -39,11 +38,7 @@ async fn main() {
     .expect("Bad config file format");
 
     let library = Arc::new(Library::new(config));
-
-    let (plm_tx, plm_rx) = unbounded_channel::<plm::PlmCommand>();
-    let plm_tx2 = plm_tx.clone();
-    let lib = library.clone();
-    tokio::spawn(async move { plm::PlmTask::new(plm_tx2, plm_rx, lib).run().await });
+    let plm = Arc::new(PlaylistManager::new(library.clone()));
 
     tokio::task::spawn_blocking(move || {
         use std::ffi::CString;
@@ -53,7 +48,7 @@ async fn main() {
             main_cpp(
                 app_name.as_ptr(),
                 &library as *const _ as u64,
-                &plm_tx as *const _ as u64,
+                &plm as *const _ as u64,
             );
         }
     })

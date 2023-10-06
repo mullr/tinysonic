@@ -41,7 +41,7 @@
             },
             "functions": {
                 "set_library": { "return": "void", "mut": true, "arguments": [{"name": "arc_ptr", "type": "quint64"}]},
-                "set_plm_tx": { "return": "void", "mut": true, "arguments": [{"name": "tx_ptr", "type": "quint64"}]},
+                "set_plm": { "return": "void", "mut": true, "arguments": [{"name": "tx_ptr", "type": "quint64"}]},
                 "handle_incoming_plm_status": { "return": "void", "mut": true },
                 "play_album": {
                     "return": "void",
